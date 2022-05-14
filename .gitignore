@@ -1,0 +1,12 @@
+# Build
+/target
+Cargo.lock
+
+# Fmt
+**/*.rs.bk
+
+# Custom
+.idea/
+/examples
+/temp
+/versions
