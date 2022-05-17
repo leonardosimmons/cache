@@ -1,14 +1,10 @@
-#![allow(unused)]
 use crate::ttl::node::{TtlEntry, TtlNode};
 use crate::CacheNodeController;
-use linked_hash_map::Entry as MapEntry;
-use linked_hash_map::LinkedHashMap;
 use linked_hash_map::OccupiedEntry as OccupiedMapEntry;
 use linked_hash_map::VacantEntry as VacantMapEntry;
-use std::borrow::Borrow;
 use std::collections::hash_map::RandomState;
 use std::hash::{BuildHasher, Hash};
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 pub struct OccupiedEntry<'a, K: 'a, V: 'a, S: 'a = RandomState> {
     pub entry: OccupiedMapEntry<'a, K, V, S>,

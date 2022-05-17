@@ -1,11 +1,6 @@
 use crate::CacheNodeController;
-use crate::ttl::Ttl;
+use crate::ttl::{Ttl, TtlStatus};
 use std::time::{Duration, Instant};
-
-pub enum NodeStatus<N> {
-    Valid(N),
-    Invalid
-}
 
 pub struct TtlEntry<V> {
     value: V,
@@ -57,8 +52,11 @@ impl<V> Ttl<V> for TtlNode<V> {
         &mut self.value
     }
 
-    fn is_expired(&self) -> bool {
-        Instant::now() > self.expiration
+    fn validate(&self) -> TtlStatus {
+        match Instant::now() > self.expiration {
+            true => TtlStatus::Expired,
+            false => TtlStatus::Valid
+        }
     }
 }
 
