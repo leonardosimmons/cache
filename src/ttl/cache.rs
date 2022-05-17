@@ -1,16 +1,20 @@
 #![allow(unused)]
 use crate::ttl::node::TtlNode;
 use crate::ttl::settings::{TtlRevalidationAction, TtlSettings};
-use crate::ttl::TtlConfiguration;
-use crate::{Cache, CacheConfiguration};
+use crate::ttl::{Ttl, TtlConfiguration};
+use crate::{Cache, CacheConfiguration, CacheNodeController, Entry};
 use bytes::Bytes;
+use linked_hash_map::Entry as MapEntry;
 use linked_hash_map::LinkedHashMap;
 use std::collections::hash_map::RandomState;
 use std::hash::{BuildHasher, Hash};
 use std::time::Duration;
+use crate::entries::{OccupiedEntry, VacantEntry};
 
 const DEFAULT_CAPACITY: usize = 1024;
 const DEFAULT_TTL: u64 = 30;
+
+
 
 pub struct TtlCacheBuilder<S = RandomState>
 where
@@ -93,19 +97,28 @@ where
     K: Hash + Eq,
     S: BuildHasher,
 {
-    pub fn test() {
-        let cache: TtlCache<String, Bytes, _> = TtlCacheBuilder::new()
-            .duration(Duration::from_secs(30))
-            .action(TtlRevalidationAction::Expire)
-            .capacity(4096)
-            .hasher(RandomState::new())
-            .build();
+    /// Checks rather or not node is still within it's TTL limit
+    pub fn node_expired(&self, key: &K) -> bool {
+        self.cache
+            .get(key)
+            .map(|node| node.is_expired())
+            .unwrap_or(false)
     }
 }
 
-impl<K, V, S> Cache<K, V, S> for TtlCache<K, V, S>
+impl<K, V, S> Cache<K, TtlNode<V>, S> for TtlCache<K, V, S>
 where
     K: Hash + Eq,
     S: BuildHasher,
 {
+    fn entry(&mut self, key: K) -> Entry<K, TtlNode<V>, S> {
+        if self.node_expired(&key) {
+            self.cache.remove(&key);
+        }
+
+        match self.cache.entry(key) {
+            MapEntry::Occupied(entry) => Entry::Occupied(OccupiedEntry { entry }),
+            MapEntry::Vacant(entry) => Entry::Vacant(VacantEntry { entry })
+        }
+    }
 }

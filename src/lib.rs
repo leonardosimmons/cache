@@ -1,4 +1,5 @@
 use std::hash::{BuildHasher, Hash};
+use crate::entries::Entry;
 
 pub mod entries;
 pub mod ttl;
@@ -8,7 +9,9 @@ where
     K: Hash + Eq,
     S: BuildHasher,
 {
+    fn entry(&mut self, key: K) -> Entry<K, V, S>;
 }
+
 
 pub trait CacheConfiguration<S>
 where

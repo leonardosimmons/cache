@@ -2,6 +2,11 @@ use crate::CacheNodeController;
 use crate::ttl::Ttl;
 use std::time::{Duration, Instant};
 
+pub enum NodeStatus<N> {
+    Valid(N),
+    Invalid
+}
+
 pub struct TtlEntry<V> {
     value: V,
     duration: Duration,
@@ -32,17 +37,14 @@ impl<V> TtlNode<V> {
 }
 
 impl<V> CacheNodeController<V> for TtlNode<V> {
-    /// Returns reference to value inside node
     fn value(&self) -> &V {
         &self.value
     }
 
-    /// Returns mutable reference to value inside node
     fn value_mut(&mut self) -> &mut V {
         &mut self.value
     }
 
-    /// Converts node into value
     fn into_value(self) -> V {
         self.value
     }

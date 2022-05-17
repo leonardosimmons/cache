@@ -7,7 +7,7 @@ pub mod settings;
 use node::TtlEntry;
 use settings::TtlRevalidationAction;
 
-trait Ttl<V> {
+pub(crate) trait Ttl<V> {
     /// Inserts an occupied node into cache
     fn insert(&mut self, entry: TtlEntry<V>) -> &mut V;
     /// Checks to see if node has reached its TTL bound

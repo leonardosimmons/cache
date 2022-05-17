@@ -11,11 +11,11 @@ use std::hash::{BuildHasher, Hash};
 use std::time::{Duration, Instant};
 
 pub struct OccupiedEntry<'a, K: 'a, V: 'a, S: 'a = RandomState> {
-    entry: OccupiedMapEntry<'a, K, V, S>,
+    pub entry: OccupiedMapEntry<'a, K, V, S>,
 }
 
 pub struct VacantEntry<'a, K: 'a, V: 'a, S: 'a = RandomState> {
-    entry: VacantMapEntry<'a, K, V, S>,
+    pub entry: VacantMapEntry<'a, K, V, S>,
 }
 
 pub enum Entry<'a, K: 'a, V: 'a, S: 'a = RandomState> {
@@ -45,15 +45,15 @@ where
     K: Hash + Eq,
     S: BuildHasher,
 {
-    fn key(&self) -> &K {
+    pub fn key(&self) -> &K {
         self.entry.key()
     }
 
-    fn get(&self) -> &V {
+    pub fn get(&self) -> &V {
         self.entry.get()
     }
 
-    fn get_mut(&mut self) -> &mut V {
+    pub fn get_mut(&mut self) -> &mut V {
         self.entry.get_mut()
     }
 }
@@ -63,7 +63,8 @@ where
     K: Hash + Eq,
     S: BuildHasher,
 {
-    fn insert(mut self, value: V, duration: Duration) -> V {
+    /// Inserts new value and returns the old value
+    pub fn insert(mut self, value: V, duration: Duration) -> V {
         let entry = TtlEntry::new(value, duration);
         let prev = self.entry.insert(TtlNode::new(entry));
         prev.into_value()
@@ -77,7 +78,7 @@ where
     K: Hash + Eq,
     S: BuildHasher,
 {
-    fn key(&self) -> &K {
+    pub fn key(&self) -> &K {
         self.entry.key()
     }
 }
@@ -87,7 +88,7 @@ where
     K: Hash + Eq,
     S: BuildHasher,
 {
-    fn insert(self, value: V, duration: Duration) -> &'a mut V {
+    pub fn insert(self, value: V, duration: Duration) -> &'a mut V {
         let entry = TtlEntry::new(value, duration);
         let node = self.entry.insert(TtlNode::new(entry));
         node.value_mut()
