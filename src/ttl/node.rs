@@ -1,4 +1,4 @@
-use crate::CacheNodeController;
+use crate::CacheNode;
 use crate::ttl::{Ttl, TtlStatus};
 use std::time::{Duration, Instant};
 
@@ -31,7 +31,7 @@ impl<V> TtlNode<V> {
     }
 }
 
-impl<V> CacheNodeController<V> for TtlNode<V> {
+impl<V> CacheNode<V> for TtlNode<V> {
     fn value(&self) -> &V {
         &self.value
     }

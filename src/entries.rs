@@ -1,5 +1,5 @@
 use crate::ttl::node::{TtlEntry, TtlNode};
-use crate::CacheNodeController;
+use crate::CacheNode;
 use linked_hash_map::OccupiedEntry as OccupiedMapEntry;
 use linked_hash_map::VacantEntry as VacantMapEntry;
 use std::collections::hash_map::RandomState;
