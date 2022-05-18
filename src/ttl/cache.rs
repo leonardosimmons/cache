@@ -1,5 +1,5 @@
 use crate::entries::{OccupiedEntry, VacantEntry};
-use crate::ttl::node::TtlNode;
+use crate::ttl::node::{TtlEntry, TtlNode};
 use crate::ttl::settings::{TtlRevalidationAction, TtlSettings};
 use crate::ttl::{Ttl, TtlConfiguration, TtlStatus};
 use crate::{Cache, CacheConfiguration, CacheNode, Entry};
@@ -107,6 +107,15 @@ impl<K, V, S> Cache<K, TtlNode<V>, V, S> for TtlCache<K, V, S>
         K: Hash + Eq,
         S: BuildHasher,
 {
+
+    fn capacity(&self) -> usize {
+        self.cache.capacity()
+    }
+
+    fn clear(&mut self) {
+        self.cache.clear()
+    }
+
     fn contains_key(&self, key: &K) -> bool {
         self.cache.contains_key(key)
     }
@@ -134,6 +143,23 @@ impl<K, V, S> Cache<K, TtlNode<V>, V, S> for TtlCache<K, V, S>
        }
     }
 
+    fn insert(&mut self, key: K, val: V) -> Option<V> {
+        if self.len() < self.capacity() {
+            let node = TtlEntry::new(val, Duration::from_secs(30)).into();
+            if let Some(old_value) = self.cache.insert(key, node) {
+                Some(old_value.into_value())
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+
+    fn is_empty(&self) -> bool {
+        self.cache.is_empty()
+    }
+
     fn get(&mut self, key: &K) -> Option<&V> {
         match self.ttl(key) {
             Some(status) => match status {
@@ -158,6 +184,10 @@ impl<K, V, S> Cache<K, TtlNode<V>, V, S> for TtlCache<K, V, S>
             },
             None => None
         }
+    }
+
+    fn len(&self) -> usize {
+        self.cache.len()
     }
 
     fn remove(&mut self, key: &K) -> Option<V> {
