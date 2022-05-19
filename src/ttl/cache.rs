@@ -48,7 +48,7 @@ impl<S> TtlCacheBuilder<S>
     where
         S: BuildHasher,
 {
-    fn build<K: Hash + Eq, V>(self) -> TtlCache<K, V, S> {
+    pub fn build<K: Hash + Eq, V>(self) -> TtlCache<K, V, S> {
         TtlCache {
             cache: LinkedHashMap::with_capacity_and_hasher(self.capacity, self.hasher),
             settings: TtlSettings::new(self.action, self.duration),
@@ -107,7 +107,6 @@ impl<K, V, S> Cache<K, TtlNode<V>, V, S> for TtlCache<K, V, S>
         K: Hash + Eq,
         S: BuildHasher,
 {
-
     fn capacity(&self) -> usize {
         self.cache.capacity()
     }
@@ -145,15 +144,12 @@ impl<K, V, S> Cache<K, TtlNode<V>, V, S> for TtlCache<K, V, S>
 
     fn insert(&mut self, key: K, val: V) -> Option<V> {
         if self.len() < self.capacity() {
-            let node = TtlEntry::new(val, Duration::from_secs(30)).into();
-            if let Some(old_value) = self.cache.insert(key, node) {
-                Some(old_value.into_value())
-            } else {
-                None
+            let node = TtlEntry::new(val, Duration::from_secs(30));
+            match self.cache.insert(key, node.into()) {
+                Some(old_node) => Some(old_node.into_value()),
+                None => None
             }
-        } else {
-            None
-        }
+        } else { None }
     }
 
     fn is_empty(&self) -> bool {
@@ -191,9 +187,9 @@ impl<K, V, S> Cache<K, TtlNode<V>, V, S> for TtlCache<K, V, S>
     }
 
     fn remove(&mut self, key: &K) -> Option<V> {
-        match self.ttl(key) {
-            Some(_status) => Some(self.cache.remove(key).unwrap().into_value()),
-            None => None
+        if let Some(_status) = self.ttl(key) {
+            Some(self.cache.remove(key).unwrap().into_value())
         }
+        else { None }
     }
 }

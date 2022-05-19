@@ -23,7 +23,7 @@ impl<V> TtlEntry<V> {
 // == impl TtlNode ==
 
 impl<V> TtlNode<V> {
-    pub fn new(entry: TtlEntry<V>) -> Self {
+    pub(crate) fn new(entry: TtlEntry<V>) -> Self {
         Self {
             value: entry.value,
             expiration: Instant::now() + entry.duration,

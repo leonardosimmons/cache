@@ -16,7 +16,7 @@ pub(crate) struct TtlSettings {
 // == impl TtlSettings ==
 
 impl TtlSettings {
-    pub fn new(action: TtlRevalidationAction, duration: Duration) -> Self {
+    pub(crate) fn new(action: TtlRevalidationAction, duration: Duration) -> Self {
         Self { action, duration }
     }
 }
