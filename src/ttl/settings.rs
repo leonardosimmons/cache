@@ -1,4 +1,3 @@
-#![allow(unused)]
 use std::time::Duration;
 
 const DEFAULT_TTL: u64 = 30;

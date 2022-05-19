@@ -13,8 +13,8 @@ const DEFAULT_CAPACITY: usize = 1024;
 const DEFAULT_TTL: u64 = 30;
 
 pub struct TtlCacheBuilder<S = RandomState>
-    where
-        S: BuildHasher,
+where
+    S: BuildHasher,
 {
     action: TtlRevalidationAction,
     capacity: usize,
@@ -23,9 +23,9 @@ pub struct TtlCacheBuilder<S = RandomState>
 }
 
 pub struct TtlCache<K, V, S>
-    where
-        K: Hash + Eq,
-        S: BuildHasher,
+where
+    K: Hash + Eq,
+    S: BuildHasher,
 {
     cache: LinkedHashMap<K, TtlNode<V>, S>,
     settings: TtlSettings,
@@ -45,8 +45,8 @@ impl TtlCacheBuilder {
 }
 
 impl<S> TtlCacheBuilder<S>
-    where
-        S: BuildHasher,
+where
+    S: BuildHasher,
 {
     pub fn build<K: Hash + Eq, V>(self) -> TtlCache<K, V, S> {
         TtlCache {
@@ -57,8 +57,8 @@ impl<S> TtlCacheBuilder<S>
 }
 
 impl<S> CacheConfiguration<S> for TtlCacheBuilder<S>
-    where
-        S: BuildHasher,
+where
+    S: BuildHasher,
 {
     fn capacity(mut self, capacity: usize) -> Self {
         self.capacity = capacity;
@@ -72,8 +72,8 @@ impl<S> CacheConfiguration<S> for TtlCacheBuilder<S>
 }
 
 impl<S> TtlConfiguration for TtlCacheBuilder<S>
-    where
-        S: BuildHasher,
+where
+    S: BuildHasher,
 {
     fn action(mut self, action: TtlRevalidationAction) -> Self {
         self.action = action;
@@ -89,9 +89,9 @@ impl<S> TtlConfiguration for TtlCacheBuilder<S>
 // == impl TtlCache ==
 
 impl<K, V, S> TtlCache<K, V, S>
-    where
-        K: Hash + Eq,
-        S: BuildHasher,
+where
+    K: Hash + Eq,
+    S: BuildHasher,
 {
     /// Returns current nodes `TTL Status`
     fn ttl(&self, key: &K) -> Option<TtlStatus> {
@@ -103,9 +103,9 @@ impl<K, V, S> TtlCache<K, V, S>
 }
 
 impl<K, V, S> Cache<K, TtlNode<V>, V, S> for TtlCache<K, V, S>
-    where
-        K: Hash + Eq,
-        S: BuildHasher,
+where
+    K: Hash + Eq,
+    S: BuildHasher,
 {
     fn capacity(&self) -> usize {
         self.cache.capacity()

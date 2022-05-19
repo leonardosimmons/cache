@@ -6,8 +6,8 @@ pub mod entries;
 pub mod ttl;
 
 pub trait CacheConfiguration<S>
-    where
-        S: BuildHasher,
+where
+    S: BuildHasher,
 {
     /// Sets the max capacity for each cache node
     fn capacity(self, capacity: usize) -> Self;
@@ -25,10 +25,10 @@ pub trait CacheNode<V> {
 }
 
 pub trait Cache<K, N, V, S>
-    where
-        K: Hash + Eq,
-        N: CacheNode<V>,
-        S: BuildHasher,
+where
+    K: Hash + Eq,
+    N: CacheNode<V>,
+    S: BuildHasher,
 {
     /// Returns the maximum capacity of the cache
     fn capacity(&self) -> usize;
