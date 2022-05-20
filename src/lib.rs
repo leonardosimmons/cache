@@ -4,6 +4,7 @@ use crate::entries::Entry;
 
 pub mod entries;
 pub mod ttl;
+pub mod utils;
 
 pub trait CacheConfiguration<S>
 where
@@ -51,3 +52,4 @@ where
     /// Removes the specified node & returns the value
     fn remove(&mut self, key: &K) -> Option<V>;
 }
+

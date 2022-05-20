@@ -6,6 +6,7 @@ pub mod settings;
 
 use node::TtlEntry;
 use settings::TtlRevalidationAction;
+use crate::ttl::settings::TtlSettings;
 
 pub(crate) enum TtlStatus {
     Valid,
@@ -19,9 +20,11 @@ trait Ttl<V> {
     fn validate(&self) -> TtlStatus;
 }
 
-trait TtlConfiguration {
+pub trait TtlConfiguration {
     /// Sets the `action` type for new cache nodes
     fn action(self, action: TtlRevalidationAction) -> Self;
     /// Sets the Time To Live `(TTL)` for new cache nodes
     fn duration(self, duration: Duration) -> Self;
+    /// Set the settings for the TTL cache
+    fn settings(self, settings: TtlSettings) -> Self;
 }

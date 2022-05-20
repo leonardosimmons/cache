@@ -7,7 +7,7 @@ pub struct TtlEntry<V> {
     duration: Duration,
 }
 
-pub(crate) struct TtlNode<V> {
+pub struct TtlNode<V> {
     value: V,
     expiration: Instant,
 }

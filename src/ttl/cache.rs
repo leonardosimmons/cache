@@ -2,6 +2,7 @@ use crate::entries::{OccupiedEntry, VacantEntry};
 use crate::ttl::node::{TtlEntry, TtlNode};
 use crate::ttl::settings::{TtlRevalidationAction, TtlSettings};
 use crate::ttl::{Ttl, TtlConfiguration, TtlStatus};
+use crate::utils::Split;
 use crate::{Cache, CacheConfiguration, CacheNode, Entry};
 use linked_hash_map::Entry as MapEntry;
 use linked_hash_map::LinkedHashMap;
@@ -81,6 +82,13 @@ where
     }
 
     fn duration(mut self, duration: Duration) -> Self {
+        self.duration = duration;
+        self
+    }
+
+    fn settings(mut self, settings: TtlSettings) -> Self {
+        let (action, duration) = settings.split();
+        self.action = action;
         self.duration = duration;
         self
     }
