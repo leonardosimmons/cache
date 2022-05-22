@@ -20,11 +20,11 @@ impl TtlSettings {
         Self { action, duration }
     }
 
-    pub fn action(&self, action: TtlRevalidationAction) -> &TtlRevalidationAction {
+    pub fn action(&self) -> &TtlRevalidationAction {
         &self.action
     }
 
-    pub fn duration(&self, duration: Duration) -> &Duration {
+    pub fn duration(&self) -> &Duration {
         &self.duration
     }
 }

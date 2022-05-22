@@ -101,6 +101,15 @@ where
     K: Hash + Eq,
     S: BuildHasher,
 {
+    /// Adds new entry to cache and returns old value if there is one
+    fn push(&mut self, key: K, val: V) -> Option<V> {
+        let entry = TtlEntry::new(val, self.settings.duration().clone());
+        match self.cache.insert(key, entry.into()) {
+            Some(old_node) => Some(old_node.into_value()),
+            None => None
+        }
+    }
+
     /// Returns current nodes `TTL Status`
     fn ttl(&self, key: &K) -> Option<TtlStatus> {
         match self.cache.get(key) {
@@ -152,12 +161,11 @@ where
 
     fn insert(&mut self, key: K, val: V) -> Option<V> {
         if self.len() < self.capacity() {
-            let node = TtlEntry::new(val, Duration::from_secs(30));
-            match self.cache.insert(key, node.into()) {
-                Some(old_node) => Some(old_node.into_value()),
-                None => None
-            }
-        } else { None }
+            self.push(key, val)
+        } else {
+            self.cache.pop_front();
+            self.push(key, val)
+        }
     }
 
     fn is_empty(&self) -> bool {
