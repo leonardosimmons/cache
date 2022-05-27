@@ -104,18 +104,18 @@ where
     /// Adds new entry to cache and returns old value if there is one
     fn push(&mut self, key: K, val: V) -> Option<V> {
         let entry = TtlEntry::new(val, self.settings.duration().clone());
-        match self.cache.insert(key, entry.into()) {
-            Some(old_node) => Some(old_node.into_value()),
-            None => None
-        }
+        self.cache
+            .insert(key, entry.into())
+            .map(|old_node| old_node.into_value())
+            .or(None)
     }
 
     /// Returns current nodes `TTL Status`
-    fn ttl(&self, key: &K) -> Option<TtlStatus> {
-        match self.cache.get(key) {
-            Some(node) => Some(node.validate()),
-            None => None
-        }
+    fn status(&self, key: &K) -> Option<TtlStatus> {
+        self.cache
+            .get(key)
+            .map(|node| node.validate())
+            .or(None)
     }
 }
 
@@ -137,7 +137,7 @@ where
     }
 
     fn entry(&mut self, key: K) -> Option<Entry<K, TtlNode<V>, S>> {
-        match self.ttl(&key) {
+        match self.status(&key) {
             Some(status) => match status {
                 TtlStatus::Valid => {
                     match self.cache.entry(key) {
@@ -173,26 +173,20 @@ where
     }
 
     fn get(&mut self, key: &K) -> Option<&V> {
-        match self.ttl(key) {
+        match self.status(key) {
             Some(status) => match status {
                 TtlStatus::Valid => Some(self.cache.get(key).unwrap().value()),
-                TtlStatus::Expired => {
-                    self.cache.remove(key).unwrap();
-                    None
-                },
+                TtlStatus::Expired => self.remove(key).and_then(|_| None)
             },
             None => None
         }
     }
 
     fn get_mut(&mut self, key: &K) -> Option<&mut V> {
-        match &mut self.ttl(key) {
+        match &mut self.status(key) {
             Some(status) => match status {
                 TtlStatus::Valid => Some(self.cache.get_mut(key).unwrap().value_mut()),
-                TtlStatus::Expired => {
-                    self.cache.remove(key).unwrap();
-                    None
-                },
+                TtlStatus::Expired => self.remove(key).and_then(|_| None)
             },
             None => None
         }
@@ -203,9 +197,8 @@ where
     }
 
     fn remove(&mut self, key: &K) -> Option<V> {
-        if let Some(_status) = self.ttl(key) {
-            Some(self.cache.remove(key).unwrap().into_value())
-        }
-        else { None }
+        self.status(key)
+            .map(|_| self.cache.remove(key).unwrap().into_value())
+            .or(None)
     }
 }
