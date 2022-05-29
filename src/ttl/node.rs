@@ -1,7 +1,6 @@
 use crate::CacheNode;
 use crate::ttl::{Ttl, TtlStatus};
 use std::time::{Duration, Instant};
-use tracing::{event, Level, span};
 
 pub(crate) struct TtlEntry<V> {
     value: V,

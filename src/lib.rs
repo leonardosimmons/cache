@@ -1,10 +1,8 @@
-#![allow(unused)]
 use std::hash::{BuildHasher, Hash};
 use crate::entries::Entry;
 
 pub mod entries;
 pub mod ttl;
-pub mod utils;
 
 pub trait CacheConfiguration<S>
 where
